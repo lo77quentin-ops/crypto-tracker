@@ -3,6 +3,7 @@ import requests
 
 app = Flask(__name__)
 
+
 @app.route("/")
 def home():
 
@@ -13,33 +14,34 @@ def home():
     }
 
     try:
-        btc = requests.get(
-            "https://api.coincap.io/v2/assets/bitcoin",
-            timeout=10
-        ).json()["data"]
 
-        eth = requests.get(
-            "https://api.coincap.io/v2/assets/ethereum",
+        btc_price = requests.get(
+            "https://min-api.cryptocompare.com/data/price?fsym=BTC&tsyms=EUR",
             timeout=10
-        ).json()["data"]
+        ).json()
 
-        sol = requests.get(
-            "https://api.coincap.io/v2/assets/solana",
+        eth_price = requests.get(
+            "https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=EUR",
             timeout=10
-        ).json()["data"]
+        ).json()
+
+        sol_price = requests.get(
+            "https://min-api.cryptocompare.com/data/price?fsym=SOL&tsyms=EUR",
+            timeout=10
+        ).json()
 
         cryptos = {
             "bitcoin": {
-                "eur": round(float(btc["priceUsd"]) * 0.87, 2),
-                "eur_24h_change": float(btc["changePercent24Hr"])
+                "eur": btc_price.get("EUR", 0),
+                "eur_24h_change": 0
             },
             "ethereum": {
-                "eur": round(float(eth["priceUsd"]) * 0.87, 2),
-                "eur_24h_change": float(eth["changePercent24Hr"])
+                "eur": eth_price.get("EUR", 0),
+                "eur_24h_change": 0
             },
             "solana": {
-                "eur": round(float(sol["priceUsd"]) * 0.87, 2),
-                "eur_24h_change": float(sol["changePercent24Hr"])
+                "eur": sol_price.get("EUR", 0),
+                "eur_24h_change": 0
             }
         }
 
@@ -55,6 +57,7 @@ def home():
         labels=labels,
         values=values
     )
+
 
 if __name__ == "__main__":
     app.run(debug=True)
