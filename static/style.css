@@ -1,0 +1,64 @@
+body {
+  background: linear-gradient(135deg, #0f172a, #111827, #020617);
+
+  color: white;
+  min-height: 100vh;
+}
+
+/* TITRE */
+
+h1 {
+  font-weight: 800;
+  color: white;
+}
+
+/* CARTES */
+
+.crypto-card {
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 20px;
+  color: white;
+
+  transition: all 0.3s ease;
+}
+
+.crypto-card:hover {
+  transform: translateY(-8px);
+
+  box-shadow:
+    0 0 25px rgba(56, 189, 248, 0.4),
+    0 0 50px rgba(56, 189, 248, 0.2);
+}
+
+/* PRIX */
+
+.price {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #38bdf8;
+}
+
+/* GRAPHIQUE */
+
+canvas {
+  max-height: 450px;
+}
+
+/* BADGES */
+
+.badge {
+  padding: 8px 12px;
+  border-radius: 10px;
+}
+
+/* SCROLLBAR */
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #38bdf8;
+  border-radius: 10px;
+}
