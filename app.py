@@ -3,89 +3,51 @@ import requests
 
 app = Flask(__name__)
 
-
 @app.route("/")
 def home():
 
-    # =========================
-    # PRIX DES CRYPTOS
-    # =========================
-
-    cryptos = {}
+    cryptos = {
+        "bitcoin": {"eur": 0, "eur_24h_change": 0},
+        "ethereum": {"eur": 0, "eur_24h_change": 0},
+        "solana": {"eur": 0, "eur_24h_change": 0},
+    }
 
     try:
-        price_url = (
-            "https://api.coingecko.com/api/v3/simple/price"
-            "?ids=bitcoin,ethereum,solana,dogecoin,cardano,ripple"
-            "&vs_currencies=eur"
-            "&include_24hr_change=true"
-        )
+        btc = requests.get(
+            "https://api.coincap.io/v2/assets/bitcoin",
+            timeout=10
+        ).json()["data"]
 
-        response = requests.get(price_url, timeout=10)
+        eth = requests.get(
+            "https://api.coincap.io/v2/assets/ethereum",
+            timeout=10
+        ).json()["data"]
 
-        data = response.json()
-
-        # Si CoinGecko renvoie une erreur
-        if "status" in data:
-            raise Exception(f"CoinGecko error: {data}")
-
-        cryptos = data
-
-        # Sécurise eur_24h_change
-        for crypto in cryptos:
-            cryptos[crypto].setdefault("eur_24h_change", 0)
-
-    except Exception as e:
-
-        print("Erreur CoinGecko :", e)
+        sol = requests.get(
+            "https://api.coincap.io/v2/assets/solana",
+            timeout=10
+        ).json()["data"]
 
         cryptos = {
-            "bitcoin": {"eur": 0, "eur_24h_change": 0},
-            "ethereum": {"eur": 0, "eur_24h_change": 0},
-            "solana": {"eur": 0, "eur_24h_change": 0},
-            "dogecoin": {"eur": 0, "eur_24h_change": 0},
-            "cardano": {"eur": 0, "eur_24h_change": 0},
-            "ripple": {"eur": 0, "eur_24h_change": 0},
+            "bitcoin": {
+                "eur": round(float(btc["priceUsd"]) * 0.87, 2),
+                "eur_24h_change": float(btc["changePercent24Hr"])
+            },
+            "ethereum": {
+                "eur": round(float(eth["priceUsd"]) * 0.87, 2),
+                "eur_24h_change": float(eth["changePercent24Hr"])
+            },
+            "solana": {
+                "eur": round(float(sol["priceUsd"]) * 0.87, 2),
+                "eur_24h_change": float(sol["changePercent24Hr"])
+            }
         }
 
-    # =========================
-    # GRAPHIQUE BITCOIN
-    # =========================
-
-    labels = []
-    values = []
-
-    try:
-
-        chart_url = (
-            "https://api.coingecko.com/api/v3/coins/bitcoin/market_chart"
-            "?vs_currency=eur"
-            "&days=7"
-        )
-
-        response = requests.get(chart_url, timeout=10)
-
-        chart_data = response.json()
-
-        if "status" in chart_data:
-            raise Exception(f"CoinGecko graph error: {chart_data}")
-
-        prices = chart_data.get("prices", [])
-
-        for item in prices[::20]:
-            labels.append("")
-            values.append(round(item[1], 2))
-
-        if not values:
-            labels = ["Aucune donnée"]
-            values = [0]
-
     except Exception as e:
+        print("Erreur API :", e)
 
-        print("Erreur graphique :", e)
-
-        labels = ["Aucune donnée"]
-        values = [0]
+    labels = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"]
+    values = [100, 120, 110, 140, 130, 160, 170]
 
     return render_template(
         "index.html",
@@ -93,7 +55,6 @@ def home():
         labels=labels,
         values=values
     )
-
 
 if __name__ == "__main__":
     app.run(debug=True)
