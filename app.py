@@ -3,49 +3,81 @@ import requests
 
 app = Flask(__name__)
 
+# Valeurs de secours
+DEFAULT_CRYPTOS = {
+    "bitcoin": {
+        "eur": 95000,
+        "eur_24h_change": 1.2
+    },
+    "ethereum": {
+        "eur": 3200,
+        "eur_24h_change": -0.5
+    },
+    "solana": {
+        "eur": 145,
+        "eur_24h_change": 2.1
+    }
+}
+
+
 @app.route("/")
 def home():
 
-    cryptos = {}
+    cryptos = DEFAULT_CRYPTOS.copy()
 
     try:
-        price_url = (
+
+        url = (
             "https://api.coingecko.com/api/v3/simple/price"
             "?ids=bitcoin,ethereum,solana"
             "&vs_currencies=eur"
             "&include_24hr_change=true"
         )
 
-        response = requests.get(price_url, timeout=10)
-        data = response.json()
+        response = requests.get(url, timeout=10)
 
-        cryptos = {
-            "bitcoin": {
-                "eur": data["bitcoin"]["eur"],
-                "eur_24h_change": data["bitcoin"].get("eur_24h_change", 0)
-            },
-            "ethereum": {
-                "eur": data["ethereum"]["eur"],
-                "eur_24h_change": data["ethereum"].get("eur_24h_change", 0)
-            },
-            "solana": {
-                "eur": data["solana"]["eur"],
-                "eur_24h_change": data["solana"].get("eur_24h_change", 0)
+        if response.status_code == 200:
+
+            data = response.json()
+
+            cryptos = {
+                "bitcoin": {
+                    "eur": data.get("bitcoin", {}).get("eur", 95000),
+                    "eur_24h_change": data.get("bitcoin", {}).get("eur_24h_change", 0)
+                },
+                "ethereum": {
+                    "eur": data.get("ethereum", {}).get("eur", 3200),
+                    "eur_24h_change": data.get("ethereum", {}).get("eur_24h_change", 0)
+                },
+                "solana": {
+                    "eur": data.get("solana", {}).get("eur", 145),
+                    "eur_24h_change": data.get("solana", {}).get("eur_24h_change", 0)
+                }
             }
-        }
 
     except Exception as e:
-        print("Erreur CoinGecko :", e)
+        print("Erreur API :", e)
 
-        cryptos = {
-            "bitcoin": {"eur": 0, "eur_24h_change": 0},
-            "ethereum": {"eur": 0, "eur_24h_change": 0},
-            "solana": {"eur": 0, "eur_24h_change": 0},
-        }
+    # Graphique toujours affiché
+    labels = [
+        "Lun",
+        "Mar",
+        "Mer",
+        "Jeu",
+        "Ven",
+        "Sam",
+        "Dim"
+    ]
 
-    # Données de démonstration pour le graphique
-    labels = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"]
-    values = [100, 120, 110, 140, 130, 160, 170]
+    values = [
+        92000,
+        93000,
+        92500,
+        94000,
+        95000,
+        94500,
+        96000
+    ]
 
     return render_template(
         "index.html",
@@ -53,6 +85,7 @@ def home():
         labels=labels,
         values=values
     )
+
 
 if __name__ == "__main__":
     app.run(debug=True)
