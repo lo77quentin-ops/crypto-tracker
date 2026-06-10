@@ -12,7 +12,7 @@ Projet personnel développé avec Flask, Python, HTML/CSS et Bootstrap.
   * Marseille
   * Lyon
   * Nantes
-* Interface responsive
+* Interface Style CCS
 * Déploiement sur Render
 
 ## Technologies utilisées
