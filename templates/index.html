@@ -32,7 +32,7 @@
         </p>
       </div>
 
-      <!-- CARTES CRYPTO -->
+      <!-- CRYPTOS -->
 
       <div class="row g-4">
         {% for crypto, info in cryptos.items() %}
@@ -99,11 +99,33 @@
         </div>
       </div>
 
+      <!-- MÉTÉO -->
+
+      <div class="mt-5">
+        <h2 class="text-center mb-4">🌤️ Météo France</h2>
+
+        <div class="row g-4">
+          {% for city in weather %}
+
+          <div class="col-lg-3 col-md-6">
+            <div class="card crypto-card h-100">
+              <div class="card-body text-center">
+                <h4>{{ city.city }}</h4>
+
+                <h2 class="price">{{ city.temp }}°C</h2>
+              </div>
+            </div>
+          </div>
+
+          {% endfor %}
+        </div>
+      </div>
+
       <!-- FOOTER -->
 
       <div class="text-center mt-5">
         <small class="text-secondary">
-          Données fournies par CoinGecko API
+          Données fournies par CoinGecko API & Open-Meteo
         </small>
       </div>
     </div>
@@ -144,22 +166,3 @@
     </script>
   </body>
 </html>
-
-<div class="mt-5">
-  <h2 class="text-center mb-4">🌤️ Météo France</h2>
-
-  <div class="row g-4">
-    {% for city in weather %}
-
-    <div class="col-lg-3 col-md-4 col-sm-6">
-      <div class="card crypto-card h-100">
-        <div class="card-body text-center">
-          <h4>{{ city.city }}</h4>
-          <h2 class="price">{{ city.temp }}°C</h2>
-        </div>
-      </div>
-    </div>
-
-    {% endfor %}
-  </div>
-</div>
